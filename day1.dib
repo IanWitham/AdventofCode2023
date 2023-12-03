@@ -1,0 +1,74 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!fsharp
+
+let loadFile fname = System.IO.File.ReadAllLines(fname)
+
+let sample = "day1.sample.txt"
+let sample2 = "day1.sample2.txt"
+let data = "day1.data.txt"
+
+#!fsharp
+
+let firstDigit s = 
+    s |> Seq.find System.Char.IsDigit
+
+let lastDigit s =
+    s |> Seq.findBack System.Char.IsDigit
+
+let parseLine s : int =
+    [| firstDigit s ; lastDigit s|]
+    |> System.String
+    |> FSharp.Core.int.Parse
+
+#!fsharp
+
+loadFile sample |> Array.map parseLine |> Array.sum
+
+#!fsharp
+
+loadFile data |> Array.map parseLine |> Array.sum
+
+#!fsharp
+
+let digitStrings = [
+    yield! (seq {1..9} |> Seq.map (fun x -> (string x, x)))
+    ("one", 1)
+    ("two", 2)
+    ("three", 3)
+    ("four", 4)
+    ("five", 5)
+    ("six", 6)
+    ("seven", 7)
+    ("eight", 8)
+    ("nine", 9)
+]
+
+#!fsharp
+
+let firstDigit (line : string)  =
+    digitStrings
+    |> List.map (fun (s, d) -> (d, line.IndexOf(s)))
+    |> List.filter (fun (d, i) -> i >= 0)
+    |> List.minBy snd
+    |> fst
+
+let lastDigit (line : string) =
+    digitStrings
+    |> List.map (fun (s, d) -> (d, line.LastIndexOf(s)))
+    |> List.filter (fun (d, i) -> i >= 0)
+    |> List.maxBy snd
+    |> fst
+
+let parseLine s : int =
+    ( firstDigit s ) * 10 + ( lastDigit s )
+
+#!fsharp
+
+loadFile sample2 |> Array.map parseLine |> Array.sum
+
+#!fsharp
+
+loadFile data |> Array.map parseLine |> Array.sum

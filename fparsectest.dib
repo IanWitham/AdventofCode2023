@@ -5,14 +5,15 @@
 #!fsharp
 
 #r "nuget:FParsec"
+open FParsec
+
+let str = pstring
 
 #!fsharp
 
-open FParsec
-
 let testString = "Game 1:"
 
-let str = pstring
+
 let gameNumberParser = str "Game " >>. pint32 .>> str ": " // "Game (n): ""
 let colorNameParser = str "red" <|> str "blue" <|> str "green" // "red|blue|green"
 let colorCountParser = tuple2 (pint32 .>> str " ") colorNameParser // "(n) red|blue|green"
@@ -24,3 +25,14 @@ run colorCountParser "4 red"
 run colorCountListParser "2 blue, 4 green, 99 red"
 run drawListParser "8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red"
 run gameParser "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
+
+let testString2 = "...42...420..."
+let numParser = skipManySatisfy (Char.IsDigit >> not)
+run numParser testString2
+
+#!fsharp
+
+let testString2 = "...42...420..."
+let numPositionParser = tuple3 getPosition pint32 getPosition
+let numParser = many (skipManySatisfy (Char.IsDigit >> not) >>. numPositionParser .>> skipManySatisfy (Char.IsDigit >> not))
+run numParser testString2
